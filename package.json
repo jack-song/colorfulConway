@@ -25,11 +25,11 @@
   },
 
   "dependencies": {
-    "express": "~3.4.4"
+    "express": "~4.0.0"
   },
   "devDependencies": {},
   "bundleDependencies": [],
 
   "private": true,
-  "main": "server.js"
+  "main": "server/app.js"
 }

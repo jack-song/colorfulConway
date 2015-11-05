@@ -1,7 +1,7 @@
 {
-  "name": "OpenShift-Sample-App",
-  "version": "1.0.0",
-  "description": "OpenShift Sample Application",
+  "name": "colorfulConway",
+  "version": "0.0.1",
+  "description": "Conway learns colors",
   "keywords": [
     "OpenShift",
     "Node.js",
@@ -9,14 +9,14 @@
     "openshift"
   ],
   "author": {
-    "name": "OpenShift",
-    "email": "ramr@example.org",
-    "url": "http://www.openshift.com/"
+    "name": "Jiapei Song",
+    "email": "jackthesong@gmail.com",
+    "url": "http://www.jack-song.me/"
   },
-  "homepage": "http://www.openshift.com/",
+  "homepage": "http://www.jack-song.me/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openshift/origin-server"
+    "url": "https://github.com/jack-song/colorfulConway.git"
   },
 
   "engines": {

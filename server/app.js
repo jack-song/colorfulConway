@@ -7,7 +7,7 @@ var fs      = require('fs');
 /**
  *  Define the sample application.
  */
-var SampleApp = function() {
+var ColorfulConway = function() {
 
     //  Scope.
     var self = this;
@@ -43,7 +43,7 @@ var SampleApp = function() {
         }
 
         //  Local cache for static content.
-        self.zcache['index.html'] = fs.readFileSync('./index.html');
+        self.zcache['index.html'] = fs.readFileSync(__dirname + '/../client/index.html');
     };
 
 
@@ -95,11 +95,6 @@ var SampleApp = function() {
     self.createRoutes = function() {
         self.routes = { };
 
-        self.routes['/asciimo'] = function(req, res) {
-            var link = "http://i.imgur.com/kmbjB.png";
-            res.send("<html><body><img src='" + link + "'></body></html>");
-        };
-
         self.routes['/'] = function(req, res) {
             res.setHeader('Content-Type', 'text/html');
             res.send(self.cache_get('index.html') );
@@ -114,6 +109,7 @@ var SampleApp = function() {
     self.initializeServer = function() {
         self.createRoutes();
         self.app = express();
+        self.app.use(express.static('client'));
 
         //  Add handlers for the app (from the routes).
         for (var r in self.routes) {
@@ -153,7 +149,7 @@ var SampleApp = function() {
 /**
  *  main():  Main code.
  */
-var zapp = new SampleApp();
+var zapp = new ColorfulConway();
 zapp.initialize();
 zapp.start();
 

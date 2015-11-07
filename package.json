@@ -18,18 +18,16 @@
     "type": "git",
     "url": "https://github.com/jack-song/colorfulConway.git"
   },
-
   "engines": {
     "node": ">= 0.6.0",
     "npm": ">= 1.0.0"
   },
-
   "dependencies": {
-    "express": "~4.0.0"
+    "express": "~4.0.0",
+    "jade": "^1.11.0"
   },
   "devDependencies": {},
   "bundleDependencies": [],
-
   "private": true,
   "main": "server/app.js"
 }

@@ -1,0 +1,11 @@
+link(href='index.css', rel='stylesheet')
+
+div
+  table
+    tbody
+      - for (var y = 0; y < rows; ++y) {
+      tr
+        - for (var x = 0; x < cols; ++x) {
+        td(id = x + ',' + y)
+        - }
+      - }

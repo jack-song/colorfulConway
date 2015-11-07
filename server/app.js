@@ -2,6 +2,7 @@
 //  OpenShift sample Node application
 var express = require('express');
 var fs      = require('fs');
+var jade    = require('jade');
 
 
 /**
@@ -38,12 +39,21 @@ var ColorfulConway = function() {
      *  Populate the cache.
      */
     self.populateCache = function() {
+        var jadeOptions = {cache: true};
+        var mapOptions = {
+            rows: '60',
+            cols: '100'
+        };
+
+        // compile map/index
+        var generateMap = jade.compileFile(__dirname + '/../views/index.jade', jadeOptions);
+
         if (typeof self.zcache === "undefined") {
-            self.zcache = { 'index.html': '' };
+            self.zcache = { 'index': '' };
         }
 
-        //  Local cache for static content.
-        self.zcache['index.html'] = fs.readFileSync(__dirname + '/../client/index.html');
+        // put the generated html into memory cache
+        self.zcache['index'] = generateMap(mapOptions);
     };
 
 
@@ -97,7 +107,9 @@ var ColorfulConway = function() {
 
         self.routes['/'] = function(req, res) {
             res.setHeader('Content-Type', 'text/html');
-            res.send(self.cache_get('index.html') );
+
+            console.log(self.cache_get('index'));
+            res.send(self.cache_get('index') );
         };
     };
 
@@ -110,6 +122,11 @@ var ColorfulConway = function() {
         self.createRoutes();
         self.app = express();
         self.app.use(express.static('client'));
+
+        //for jade templating (not really used right now)
+        //self.app.set('views', __dirname + '/../views');
+        //self.app.set('view engine', 'jade');
+
 
         //  Add handlers for the app (from the routes).
         for (var r in self.routes) {

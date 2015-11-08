@@ -1,9 +1,13 @@
 #!/bin/env node
 //  OpenShift sample Node application
 var express = require('express');
-var fs      = require('fs');
 var jade    = require('jade');
-
+var GameOfLife = require(__dirname + '/GameOfLife.js');
+var cellFactory = require(__dirname + '/cellFactory.js');
+var MAP_SIZE = {
+    rows: '60',
+    cols: '100'
+};
 
 /**
  *  Define the sample application.
@@ -32,6 +36,8 @@ var ColorfulConway = function() {
             console.warn('No OPENSHIFT_NODEJS_IP var, using 127.0.0.1');
             self.ipaddress = "127.0.0.1";
         };
+
+        self.game = new GameOfLife([], MAP_SIZE.cols, MAP_SIZE.rows);
     };
 
 
@@ -40,10 +46,7 @@ var ColorfulConway = function() {
      */
     self.populateCache = function() {
         var jadeOptions = {cache: true};
-        var mapOptions = {
-            rows: '60',
-            cols: '100'
-        };
+
 
         // compile map/index
         var generateMap = jade.compileFile(__dirname + '/../views/index.jade', jadeOptions);
@@ -53,7 +56,7 @@ var ColorfulConway = function() {
         }
 
         // put the generated html into memory cache
-        self.zcache['index'] = generateMap(mapOptions);
+        self.zcache['index'] = generateMap(MAP_SIZE);
     };
 
 
@@ -108,9 +111,16 @@ var ColorfulConway = function() {
         self.routes['/'] = function(req, res) {
             res.setHeader('Content-Type', 'text/html');
 
-            console.log(self.cache_get('index'));
             res.send(self.cache_get('index') );
         };
+    };
+
+    self.connectSockets = function() {
+        self.io.on('connection', function(socket) {
+            socket.on('requestCell', function(data) {
+                console.log(data);
+            });
+        });
     };
 
 
@@ -119,8 +129,13 @@ var ColorfulConway = function() {
      *  the handlers.
      */
     self.initializeServer = function() {
-        self.createRoutes();
         self.app = express();
+        self.http = require('http').Server(self.app);
+        self.io = require('socket.io')(self.http);
+
+        self.createRoutes();
+        self.connectSockets();
+
         self.app.use(express.static('client'));
 
         //for jade templating (not really used right now)
@@ -153,7 +168,7 @@ var ColorfulConway = function() {
      */
     self.start = function() {
         //  Start the app on the specific interface (and port).
-        self.app.listen(self.port, self.ipaddress, function() {
+        self.http.listen(self.port, self.ipaddress, function() {
             console.log('%s: Node server started on %s:%d ...',
                         Date(Date.now() ), self.ipaddress, self.port);
         });

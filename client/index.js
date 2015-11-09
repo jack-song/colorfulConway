@@ -13,22 +13,41 @@ $(document).ready(function(){
     isMousedown = false;    // When mouse goes up, set isDown to false
   });
 
+  var colorCell = function(cell) {
+    var jcell = $('#' + cell.id);
+
+    jcell.css('background-color', cell.alive ? cell.color : DEAD_COLOR);
+  }
+
   //assumes 'this' is the DOM element
   var requestCell = function() {
     //only proceed if cell is dead
     //jquery only returns a stupid rgb string
     if($(this).css("background-color") == TEST_DEAD_COLOR) {
+      var coords = $(this).attr('id').split('-');
+
       socket.emit('requestCell', {
-          name: $(this).attr('id'), 
+          x: coords[0],
+          y: coords[1],
           color: USER_COLOR
         }
       );
     }
   }
 
+  //set up DOM listeners
   $('td').mousedown(requestCell).mouseover(function () {
     if(isMousedown) {
       requestCell.call(this);
     }
+  });
+
+  //set up socket listeners
+  socket.on('newCell', function(cell){
+    colorCell(cell);
+  });
+
+  socket.on('currentCells', function(cells){
+    cells.forEach(colorCell);
   });
 });

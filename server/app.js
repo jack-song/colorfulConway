@@ -117,8 +117,18 @@ var ColorfulConway = function() {
 
     self.connectSockets = function() {
         self.io.on('connection', function(socket) {
+            //send message with data of current cells right away
+            socket.emit('currentCells', self.game.getCurrentCells());
+
             socket.on('requestCell', function(data) {
                 console.log(data);
+
+                var newCell = cellFactory.createCell(data.x, data.y, data.color);
+
+                //if added sucessfully
+                if(self.game.addCell(newCell)){
+                    self.io.emit('newCell', newCell);
+                }
             });
         });
     };

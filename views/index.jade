@@ -9,7 +9,7 @@ html(lang="en")
           - for (var y = 0; y < rows; ++y) {
           tr
             - for (var x = 0; x < cols; ++x) {
-            td(id = x + ',' + y)
+            td(id = x + '-' + y)
             - }
           - }
     link(rel='stylesheet', href='index.css')

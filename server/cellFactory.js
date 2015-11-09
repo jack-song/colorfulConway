@@ -1,4 +1,4 @@
-var createCell = function (row, col, color){
+var createCell = function (xpos, ypos, color){
 
 	//ARGGH x => COL, y => ROW
 
@@ -7,10 +7,10 @@ var createCell = function (row, col, color){
 		this.y = y;
 		this.color = color || '#444444';
 		this.alive = true;
-		this.id = '' + this.y + '-' + this.x;
+		this.id = '' + this.x + '-' + this.y;
 	}
 
-	return new Cell(col, row);
+	return new Cell(xpos, ypos);
 }
 
 module.exports = {

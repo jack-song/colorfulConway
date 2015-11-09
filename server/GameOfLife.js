@@ -152,7 +152,12 @@ GameOfLife.prototype.iterate = function () {
 
 GameOfLife.prototype.addCell = function (cell) {
 	//don't add a cell if one already exists there
-	this.currentArray[cell.x][cell.y] = this.currentArray[cell.x][cell.y] || cell;
+	if(this.currentArray[cell.x][cell.y]) {
+		return false;
+	} else {
+		this.currentArray[cell.x][cell.y] = cell;
+		return true;
+	}
 }
 
 GameOfLife.prototype.getCurrentCells = function () {

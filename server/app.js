@@ -121,8 +121,6 @@ var ColorfulConway = function() {
             socket.emit('currentCells', self.game.getCurrentCells());
 
             socket.on('requestCell', function(data) {
-                console.log(data);
-
                 var newCell = cellFactory.createCell(data.x, data.y, data.color);
 
                 //if added sucessfully
@@ -172,6 +170,10 @@ var ColorfulConway = function() {
         self.initializeServer();
     };
 
+    self.iterateGame = function() {
+        self.io.emit('iterate', self.game.iterate());
+    }
+
 
     /**
      *  Start the server (starts up the sample application).
@@ -182,6 +184,8 @@ var ColorfulConway = function() {
             console.log('%s: Node server started on %s:%d ...',
                         Date(Date.now() ), self.ipaddress, self.port);
         });
+
+        setInterval(self.iterateGame, 200);
     };
 
 };   /*  Sample Application.  */

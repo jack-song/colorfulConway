@@ -50,4 +50,8 @@ $(document).ready(function(){
   socket.on('currentCells', function(cells){
     cells.forEach(colorCell);
   });
+
+  socket.on('iterate', function(cells){
+    cells.forEach(colorCell);
+  });
 });

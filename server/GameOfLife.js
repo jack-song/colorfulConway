@@ -1,5 +1,4 @@
 var cellCreator = require('./cellFactory.js');
-var Color = require("color");
 
 // GAME OF LIFE AS OBJECT
 //considers a "cell" to be any object with a row and col field
@@ -82,7 +81,9 @@ GameOfLife.prototype.iterate = function () {
 		return cell.color;
 	}.bind(this);
 
-	var getAvgColor = function (x, y) {
+	var setAvgColor = function (newCell) {
+		var x = newCell.x;
+		var y = newCell.y;
 		var num = 9;
 		var currentColor;
 		var rgb = [0, 0, 0];
@@ -96,22 +97,16 @@ GameOfLife.prototype.iterate = function () {
 				if(currentColor == null) {
 					num--;
 				} else {
-					var colorObj = Color(currentColor);
-					rgb[0] += colorObj.red();
-					rgb[1] += colorObj.green();
-					rgb[2] += colorObj.blue();
+					rgb[0] += currentColor.r;
+					rgb[1] += currentColor.g;
+					rgb[2] += currentColor.b;
 				}
 			}
 		}
 
 		//get rgb averages
-		rgb.forEach(function(val, index, arr) {
-		  arr[index] = Math.floor(val/num);
-		});
+		newCell.setRGB(Math.floor(rgb[0]/num), Math.floor(rgb[1]/num), Math.floor(rgb[2]/num));
 
-		newColor = Color().rgb(rgb[0], rgb[1], rgb[2]);
-
-		return newColor.hexString();;
 	}.bind(this);
 
 	for(var x = 0; x < this.width; x++) {
@@ -125,8 +120,11 @@ GameOfLife.prototype.iterate = function () {
 
 				//if changed, new cell
 				if(this.currentArray[x][y] === null) {
-					newArray[x][y] = cellCreator.createCell(x, y, getAvgColor(x, y));
-					changedCells.push(newArray[x][y]);
+					var newCell = cellCreator.createCell(x, y);
+					setAvgColor(newCell);
+
+					newArray[x][y] = newCell;
+					changedCells.push(newCell);
 				} else {
 					//if there's already a cell, keep it
 					newArray[x][y] = this.currentArray[x][y];

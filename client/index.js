@@ -16,7 +16,7 @@ $(document).ready(function(){
   var colorCell = function(cell) {
     var jcell = $('#' + cell.id);
 
-    jcell.css('background-color', cell.alive ? cell.color : DEAD_COLOR);
+    jcell.css('background-color', cell.alive ? cell.css : DEAD_COLOR);
   }
 
   //assumes 'this' is the DOM element

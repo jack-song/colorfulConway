@@ -60,6 +60,7 @@ $(document).ready(function(){
   });
 
   socket.on('countdown', function(data){
-    console.log(data);
+    var message = data.running ? 'Simulating! Next round in: ' : 'Place your cells! Round starts in: ';
+    $('#alert').text(message + data.time);
   });
 });

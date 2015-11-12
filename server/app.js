@@ -9,8 +9,8 @@ var MAP_SIZE = {
     cols: '100'
 };
 
-var SETUP_TIME = 10;
-var SIM_TIME = 30;
+var SETUP_TIME = 15+1;
+var SIM_TIME = 30+1;
 
 /**
  *  Define the sample application.

@@ -9,6 +9,9 @@ var MAP_SIZE = {
     cols: '100'
 };
 
+var SETUP_TIME = 10;
+var SIM_TIME = 30;
+
 /**
  *  Define the sample application.
  */
@@ -177,8 +180,19 @@ var ColorfulConway = function() {
         self.io.emit('iterate', self.game.iterate());
     }
 
+    self.countdown = function(startTime) {
+        var time = startTime;
+        self.countdownIntervalID = setInterval(function() {
+            time--;
+            self.io.emit('countdown', {'time': time, 'running': !!self.gameIntervalID});
+        }, 1000);
+    }
 
     self.enterSetup = function() {
+        //stop any countdowns
+        if(self.countdownIntervalID) {
+            clearInterval(self.countdownIntervalID);
+        }
 
         // clear the current game running id
         if(self.gameIntervalID) {
@@ -189,14 +203,19 @@ var ColorfulConway = function() {
         self.game.clear();
         self.io.emit('clear');
 
-        setTimeout(self.enterSimulation, 10000);
+        setTimeout(self.enterSimulation, SETUP_TIME*1000);
+        self.countdown(SETUP_TIME);
     }
 
     self.enterSimulation = function() {
+        //stop any countdowns
+        if(self.countdownIntervalID) {
+            clearInterval(self.countdownIntervalID);
+        }
 
         self.gameIntervalID = setInterval(self.iterateGame, 70);
-        setTimeout(self.enterSetup, 30000);
-        self.countdown('New round in ', 30, '');
+        setTimeout(self.enterSetup, SIM_TIME*1000);
+        self.countdown(SIM_TIME);
     }
 
 

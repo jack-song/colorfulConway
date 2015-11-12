@@ -58,4 +58,8 @@ $(document).ready(function(){
   socket.on('clear', function(){
     $('td').css('background-color', DEAD_COLOR);
   });
+
+  socket.on('countdown', function(data){
+    console.log(data);
+  });
 });

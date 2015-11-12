@@ -121,11 +121,14 @@ var ColorfulConway = function() {
             socket.emit('currentCells', self.game.getCurrentCells());
 
             socket.on('requestCell', function(data) {
-                var newCell = cellFactory.createCell(data.x, data.y, data.color);
+                //only allowed if the game isn't already running
+                if(!self.gameIntervalID) {
+                    var newCell = cellFactory.createCell(data.x, data.y, data.color);
 
-                //if added sucessfully
-                if(self.game.addCell(newCell)){
-                    self.io.emit('newCell', newCell);
+                    //if added sucessfully
+                    if(self.game.addCell(newCell)){
+                        self.io.emit('newCell', newCell);
+                    }
                 }
             });
         });
@@ -175,6 +178,28 @@ var ColorfulConway = function() {
     }
 
 
+    self.enterSetup = function() {
+
+        // clear the current game running id
+        if(self.gameIntervalID) {
+            clearInterval(self.gameIntervalID);
+            self.gameIntervalID = null;
+        }
+
+        self.game.clear();
+        self.io.emit('clear');
+
+        setTimeout(self.enterSimulation, 10000);
+    }
+
+    self.enterSimulation = function() {
+
+        self.gameIntervalID = setInterval(self.iterateGame, 70);
+        setTimeout(self.enterSetup, 30000);
+        self.countdown('New round in ', 30, '');
+    }
+
+
     /**
      *  Start the server (starts up the sample application).
      */
@@ -185,7 +210,7 @@ var ColorfulConway = function() {
                         Date(Date.now() ), self.ipaddress, self.port);
         });
 
-        setInterval(self.iterateGame, 200);
+        self.enterSetup();
     };
 
 };   /*  Sample Application.  */

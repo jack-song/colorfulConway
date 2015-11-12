@@ -54,4 +54,8 @@ $(document).ready(function(){
   socket.on('iterate', function(cells){
     cells.forEach(colorCell);
   });
+
+  socket.on('clear', function(){
+    $('td').css('background-color', DEAD_COLOR);
+  });
 });

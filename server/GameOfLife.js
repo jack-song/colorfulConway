@@ -1,5 +1,15 @@
 var cellCreator = require('./cellFactory.js');
 
+var clear2DArray = function(array, width, height) {
+	for(var x = 0; x < width; x++) {
+		array[x] = [];
+		for(var y = 0; y < height; y++) {
+			//null means dead/not alive
+			array[x][y] = null;
+		}
+	}
+}
+
 // GAME OF LIFE AS OBJECT
 //considers a "cell" to be any object with a row and col field
 var GameOfLife = function(liveCellArray, width, height) {
@@ -10,13 +20,7 @@ var GameOfLife = function(liveCellArray, width, height) {
 	var currentCell;
 
 	//set defaults
-	for(var x = 0; x < this.width; x++) {
-		this.currentArray[x] = [];
-		for(var y = 0; y < this.height; y++) {
-			//null means dead/not alive
-			this.currentArray[x][y] = null;
-		}
-	}
+	clear2DArray(this.currentArray, this.width, this.height);
 
 	//add currently alive cells
 	for(var cell_num = 0; cell_num < liveCellArray.length; cell_num++) {
@@ -179,6 +183,10 @@ GameOfLife.prototype.getCurrentCells = function () {
 	}
 
 	return liveCells;
+}
+
+GameOfLife.prototype.clear = function () {
+	clear2DArray(this.currentArray, this.width, this.height);
 }
 
 

@@ -22,17 +22,16 @@ td {
 }
 
 #alert {
+  font-family: "Courier New", monospace;
   position: fixed;
-  top: 4%;
-  left: 4%;
+  top: 0%;
+  left: 0%;
 
   background-color: white;
-  opacity: .6;
-  border-radius: .5em;
+  opacity: .7;
   padding: .6em;
   padding-top: .3em;
   padding-bottom: .3em;
 
-  font-size: 1.4rem;
-  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 1rem;
 }

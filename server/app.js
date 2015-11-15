@@ -11,6 +11,7 @@ var MAP_SIZE = {
 
 var SETUP_TIME = 15+1;
 var SIM_TIME = 30+1;
+var INTERATION_TIME = 200;
 
 /**
  *  Define the sample application.
@@ -213,7 +214,7 @@ var ColorfulConway = function() {
             clearInterval(self.countdownIntervalID);
         }
 
-        self.gameIntervalID = setInterval(self.iterateGame, 70);
+        self.gameIntervalID = setInterval(self.iterateGame, INTERATION_TIME);
         setTimeout(self.enterSetup, SIM_TIME*1000);
         self.countdown(SIM_TIME);
     }

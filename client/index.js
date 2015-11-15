@@ -1,8 +1,10 @@
 $(document).ready(function(){
   var socket = io();
+  var attachFastClick = Origami.fastclick;
+  attachFastClick(document.body);
+
   var DEAD_COLOR = '#eeeeee';
   var TEST_DEAD_COLOR = 'rgb(238, 238, 238)';
-  //not used yet
   var USER_COLOR = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
 
   var isMousedown = false;   // Tracks status of mouse button
@@ -36,7 +38,7 @@ $(document).ready(function(){
   }
 
   //set up DOM listeners
-  $('td').mousedown(requestCell).mouseover(function () {
+  $('td').click(requestCell).mouseover(function () {
     if(isMousedown) {
       requestCell.call(this);
     }

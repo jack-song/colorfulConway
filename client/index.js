@@ -15,10 +15,10 @@ $(document).ready(function(){
     isMousedown = false;    // When mouse goes up, set isDown to false
   });
 
-  var colorCell = function(cell) {
-    var jcell = $('#' + cell.id);
+  var colorCell = function(cellData) {
+    var jcell = $('#' + cellData.x + '-' + cellData.y);
 
-    jcell.css('background-color', cell.alive ? cell.css : DEAD_COLOR);
+    jcell.css('background-color', cellData.alive ? cellData.css : DEAD_COLOR);
   }
 
   //assumes 'this' is the DOM element
@@ -31,7 +31,8 @@ $(document).ready(function(){
       socket.emit('requestCell', {
           x: coords[0],
           y: coords[1],
-          color: USER_COLOR
+          alive: true,
+          css: USER_COLOR
         }
       );
     }
@@ -45,8 +46,8 @@ $(document).ready(function(){
   });
 
   //set up socket listeners
-  socket.on('newCell', function(cell){
-    colorCell(cell);
+  socket.on('newCell', function(cellData){
+    colorCell(cellData);
   });
 
   socket.on('currentCells', function(cells){

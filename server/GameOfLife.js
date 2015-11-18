@@ -1,18 +1,16 @@
 var cellCreator = require('./cellFactory.js');
 
-var clear2DArray = function(array, width, height) {
+var clearByDeath = function(array, width, height) {
 	for(var x = 0; x < width; x++) {
-		array[x] = [];
 		for(var y = 0; y < height; y++) {
-			//null means dead/not alive
-			array[x][y] = null;
+			array[x][y].alive = false;
 		}
 	}
 }
 
 // GAME OF LIFE AS OBJECT
 //considers a "cell" to be any object with a row and col field
-var GameOfLife = function(liveCellArray, width, height) {
+var GameOfLife = function(width, height) {
 	this.width = width;
 	this.height = height;
 	this.currentArray = [];
@@ -20,29 +18,18 @@ var GameOfLife = function(liveCellArray, width, height) {
 	var currentCell;
 
 	//set defaults
-	clear2DArray(this.currentArray, this.width, this.height);
-
-	//add currently alive cells
-	for(var cell_num = 0; cell_num < liveCellArray.length; cell_num++) {
-		currentCell = liveCellArray[cell_num];
-		this.currentArray[currentCell.col][currentCell.row] = currentCell;
+	for(var x = 0; x < this.width; x++) {
+		this.currentArray[x] = [];
+		for(var y = 0; y < this.height; y++) {
+			this.currentArray[x][y] = cellCreator.createCell(x, y);
+		}
 	}
 }
 
 //iterate once, and report any cells that have changed as an array
 GameOfLife.prototype.iterate = function () {
-	var newArray = [];
 	var currentSum = 0;
 	var changedCells = [];
-
-	//set defaults
-	for(var x = 0; x < this.width; x++) {
-		newArray[x] = [];
-		for(var y = 0; y < this.height; y++) {
-			//null means dead/not alive
-			newArray[x][y] = null;
-		}
-	}
 
 	var getValue = function(x, y) {
 		var col = this.currentArray[x];
@@ -53,7 +40,7 @@ GameOfLife.prototype.iterate = function () {
 		var cell = col[y];
 
 		//null is dead cell, undefined is bad access
-		return !!cell ? 1 : 0;
+		return (cell && cell.alive) ? 1 : 0;
 	}.bind(this);
 
 	var getSum = function (x, y) {
@@ -78,7 +65,7 @@ GameOfLife.prototype.iterate = function () {
 		var cell = col[y];
 
 		//null is dead cell, undefined is bad access
-		if(!cell) {
+		if(!cell || !cell.alive) {
 			return null;
 		}
 
@@ -123,61 +110,67 @@ GameOfLife.prototype.iterate = function () {
 			if(currentSum === 3) {
 
 				//if changed, new cell
-				if(this.currentArray[x][y] === null) {
-					var newCell = cellCreator.createCell(x, y);
-					setAvgColor(newCell);
+				if(!this.currentArray[x][y].alive) {
+					setAvgColor(this.currentArray[x][y]);
 
-					newArray[x][y] = newCell;
-					changedCells.push(newCell);
+					changedCells.push({
+						x: x,
+						y: y,
+						alive: true,
+						css: this.currentArray[x][y].css
+					});
 				} else {
-					//if there's already a cell, keep it
-					newArray[x][y] = this.currentArray[x][y];
+					//if there's already a cell, leave it alone
 				}
 
 				//CONSTANT
 			} else if (currentSum === 4) {
-				newArray[x][y] = this.currentArray[x][y];
+				//leave it alone
 
 				// DEATH
 			} else {
-				newArray[x][y] = null;
-
 				//if changed, add to toggle list
-				if(this.currentArray[x][y] !== null) {
-					//mark for death for convenience
-					this.currentArray[x][y].alive = false;
+				if(this.currentArray[x][y].alive) {
 
-					changedCells.push(this.currentArray[x][y]);
+					changedCells.push({
+						x: x,
+						y: y,
+						alive: false
+					});
+				} else {
+					//if already dead, leave it alone
 				}
 			}
 		}
 	}
 
-	this.currentArray = newArray;
+	//apply changes to model
+	changedCells.forEach(function(cellData) {
+		this.currentArray[cellData.x][cellData.y].alive = cellData.alive;
+		//color should already be set
+	}.bind(this));
 
 	return changedCells;
 }
 
-GameOfLife.prototype.addCell = function (cell) {
+GameOfLife.prototype.addCell = function (cellData) {
 	//don't add a cell if one already exists there
-	if(this.currentArray[cell.x][cell.y]) {
+	if(this.currentArray[cellData.x][cellData.y].alive) {
 		return false;
 	} else {
-		this.currentArray[cell.x][cell.y] = cell;
+		this.currentArray[cellData.x][cellData.y].alive = true;
+		this.currentArray[cellData.x][cellData.y].setCSS(cellData.css);
 		return true;
 	}
 }
 
 GameOfLife.prototype.getCurrentCells = function () {
 	var liveCells = [];
-	var currentCell;
 	
 	for(var x = 0; x < this.width; x++) {
 		for(var y = 0; y < this.height; y++) {
-			var currentCell = this.currentArray[x][y];
-
-			if(currentCell) {
-				liveCells.push(currentCell);
+			if(this.currentArray[x][y].alive) {
+				liveCells.push(this.currentArray[x][y]);
 			}
 		}
 	}
@@ -186,7 +179,7 @@ GameOfLife.prototype.getCurrentCells = function () {
 }
 
 GameOfLife.prototype.clear = function () {
-	clear2DArray(this.currentArray, this.width, this.height);
+	clearByDeath(this.currentArray, this.width, this.height);
 }
 
 

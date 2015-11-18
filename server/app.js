@@ -41,7 +41,7 @@ var ColorfulConway = function() {
             self.ipaddress = "127.0.0.1";
         };
 
-        self.game = new GameOfLife([], MAP_SIZE.cols, MAP_SIZE.rows);
+        self.game = new GameOfLife(MAP_SIZE.cols, MAP_SIZE.rows);
     };
 
 
@@ -124,14 +124,12 @@ var ColorfulConway = function() {
             //send message with data of current cells right away
             socket.emit('currentCells', self.game.getCurrentCells());
 
-            socket.on('requestCell', function(data) {
+            socket.on('requestCell', function(cellData) {
                 //only allowed if the game isn't already running
                 if(!self.gameIntervalID) {
-                    var newCell = cellFactory.createCell(data.x, data.y, data.color);
-
                     //if added sucessfully
-                    if(self.game.addCell(newCell)){
-                        self.io.emit('newCell', newCell);
+                    if(self.game.addCell(cellData)){
+                        self.io.emit('newCell', cellData);
                     }
                 }
             });

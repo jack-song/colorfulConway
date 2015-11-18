@@ -5,12 +5,12 @@ var jade    = require('jade');
 var GameOfLife = require(__dirname + '/GameOfLife.js');
 var cellFactory = require(__dirname + '/cellFactory.js');
 var MAP_SIZE = {
-    rows: '60',
-    cols: '100'
+    rows: '40',
+    cols: '70'
 };
 
 var SETUP_TIME = 15+1;
-var SIM_TIME = 30+1;
+var SIM_TIME = 40+1;
 var INTERATION_TIME = 200;
 
 /**

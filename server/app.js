@@ -12,6 +12,8 @@ var MAP_SIZE = {
 var SETUP_TIME = 15+1;
 var SIM_TIME = 40+1;
 var INTERATION_TIME = 200;
+//per round
+var REQUEST_LIMIT = 100;
 
 /**
  *  Define the sample application.
@@ -42,6 +44,9 @@ var ColorfulConway = function() {
         };
 
         self.game = new GameOfLife(MAP_SIZE.cols, MAP_SIZE.rows);
+
+        //track requests made by each client
+        self.clearRequests();
     };
 
 
@@ -125,11 +130,18 @@ var ColorfulConway = function() {
             socket.emit('currentCells', self.game.getCurrentCells());
 
             socket.on('requestCell', function(cellData) {
-                //only allowed if the game isn't already running
-                if(!self.gameIntervalID) {
+
+                //start tracking # requests made by each client
+                if(!self.cellRequests[socket.id]) {
+                    self.cellRequests[socket.id] = 0;
+                }
+
+                //only allowed if within request limit
+                if(self.cellRequests[socket.id] < REQUEST_LIMIT) {
                     //if added sucessfully
                     if(self.game.addCell(cellData)){
                         self.io.emit('newCell', cellData);
+                        self.cellRequests[socket.id]++;
                     }
                 }
             });
@@ -187,6 +199,14 @@ var ColorfulConway = function() {
         }, 1000);
     }
 
+    self.clearRequests = function() {
+        if(self.cellRequests) {
+            delete self.cellRequests;
+        }
+
+        self.cellRequests = {};
+    }
+
     self.enterSetup = function() {
         //stop any countdowns
         if(self.countdownIntervalID) {
@@ -199,6 +219,7 @@ var ColorfulConway = function() {
             self.gameIntervalID = null;
         }
 
+        self.clearRequests();
         self.game.clear();
         self.io.emit('clear');
 
@@ -212,6 +233,7 @@ var ColorfulConway = function() {
             clearInterval(self.countdownIntervalID);
         }
 
+        self.clearRequests();
         self.gameIntervalID = setInterval(self.iterateGame, INTERATION_TIME);
         setTimeout(self.enterSetup, SIM_TIME*1000);
         self.countdown(SIM_TIME);

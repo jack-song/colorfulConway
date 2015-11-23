@@ -63,7 +63,7 @@ $(document).ready(function(){
   });
 
   socket.on('countdown', function(data){
-    var message = data.running ? 'Simulating! Next round in: ' : 'Place your cells! Round starts in: ';
+    var message = data.running ? 'Interact! Next round in: ' : 'Place your cells! Round starts in: ';
     $('#alert').text(message + data.time);
   });
 });

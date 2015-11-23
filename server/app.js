@@ -12,6 +12,7 @@ var MAP_SIZE = {
 var SETUP_TIME = 15+1;
 var SIM_TIME = 40+1;
 var INTERATION_TIME = 200;
+var SHORT_TIME = 5+1;
 //per round
 var REQUEST_LIMIT = 100;
 
@@ -47,6 +48,9 @@ var ColorfulConway = function() {
 
         //track requests made by each client
         self.clearRequests();
+
+        //check for boring equilibrium states
+        self.lastChanges = [];
     };
 
 
@@ -188,14 +192,43 @@ var ColorfulConway = function() {
     };
 
     self.iterateGame = function() {
-        self.io.emit('iterate', self.game.iterate());
+        var changedCells = self.game.iterate();
+
+        var check = function () {
+            var match = true;
+            //if stuck in oscillating changes, short circuit to the set up faster
+            if(changedCells.length !== self.lastChanges.length) {
+                match = false;
+            } else {
+                changedCells.forEach(function (cell, index) {
+                    if(cell.x !== self.lastChanges[index].x || cell.y !== self.lastChanges[index].y) {
+                        match = false;
+                    }
+                });
+            }
+                
+            if(match) {
+                clearTimeout(self.simTimeout);
+                self.simTimeout = setTimeout(self.enterSetup, SHORT_TIME*1000);
+                self.countdown(SHORT_TIME);
+            } else {
+                self.lastChanges = changedCells;
+            }
+        }
+
+        if(self.countdown.time > SHORT_TIME+2) {
+            setTimeout(check, 0);
+        }
+
+        self.io.emit('iterate', changedCells);
     }
 
     self.countdown = function(startTime) {
-        var time = startTime;
+        self.countdown.time = startTime;
+        clearInterval(self.countdownIntervalID);
         self.countdownIntervalID = setInterval(function() {
-            time--;
-            self.io.emit('countdown', {'time': time, 'running': !!self.gameIntervalID});
+            self.countdown.time--;
+            self.io.emit('countdown', {'time': self.countdown.time, 'running': !!self.gameIntervalID});
         }, 1000);
     }
 
@@ -223,7 +256,7 @@ var ColorfulConway = function() {
         self.game.clear();
         self.io.emit('clear');
 
-        setTimeout(self.enterSimulation, SETUP_TIME*1000);
+        self.setupTimeout = setTimeout(self.enterSimulation, SETUP_TIME*1000);
         self.countdown(SETUP_TIME);
     }
 
@@ -235,7 +268,7 @@ var ColorfulConway = function() {
 
         self.clearRequests();
         self.gameIntervalID = setInterval(self.iterateGame, INTERATION_TIME);
-        setTimeout(self.enterSetup, SIM_TIME*1000);
+        self.simTimeout = setTimeout(self.enterSetup, SIM_TIME*1000);
         self.countdown(SIM_TIME);
     }
 

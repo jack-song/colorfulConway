@@ -39,7 +39,7 @@ $(document).ready(function(){
   }
 
   //set up DOM listeners
-  $('td').click(requestCell).mouseover(function () {
+  $('td').click(requestCell).mousedown(requestCell).mouseover(function () {
     if(isMousedown) {
       requestCell.call(this);
     }

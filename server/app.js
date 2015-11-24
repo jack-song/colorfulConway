@@ -140,8 +140,8 @@ var ColorfulConway = function() {
                     self.cellRequests[socket.id] = 0;
                 }
 
-                //only allowed if within request limit
-                if(self.cellRequests[socket.id] < REQUEST_LIMIT) {
+                //only allowed if within request limit and not already running
+                if(!self.gameIntervalID && self.cellRequests[socket.id] < REQUEST_LIMIT) {
                     //if added sucessfully
                     if(self.game.addCell(cellData)){
                         self.io.emit('newCell', cellData);

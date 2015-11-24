@@ -2,8 +2,8 @@
 //  OpenShift sample Node application
 var express = require('express');
 var jade    = require('jade');
-var GameOfLife = require(__dirname + '/GameOfLife.js');
-var cellFactory = require(__dirname + '/cellFactory.js');
+var GameOfLife = require(__dirname + '/../client/GameOfLife.js');
+var cellFactory = require(__dirname + '/../client/cellFactory.js');
 var MAP_SIZE = {
     rows: '40',
     cols: '70'
@@ -258,6 +258,7 @@ var ColorfulConway = function() {
 
         self.setupTimeout = setTimeout(self.enterSimulation, SETUP_TIME*1000);
         self.countdown(SETUP_TIME);
+        self.io.emit('setup');
     }
 
     self.enterSimulation = function() {
@@ -270,6 +271,7 @@ var ColorfulConway = function() {
         self.gameIntervalID = setInterval(self.iterateGame, INTERATION_TIME);
         self.simTimeout = setTimeout(self.enterSetup, SIM_TIME*1000);
         self.countdown(SIM_TIME);
+        self.io.emit('simulate')
     }
 
 

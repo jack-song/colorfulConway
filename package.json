@@ -27,7 +27,13 @@
     "jade": "^1.11.0",
     "socket.io": "^1.3.7"
   },
-  "devDependencies": {},
+  "scripts": {
+    "build": "watchify client/gameLoader.js -o client/game.js"
+  },
+  "devDependencies": {
+    "watchify": "latest",
+    "nodemon": "latest"
+  },
   "bundleDependencies": [],
   "private": true,
   "main": "server/app.js"

@@ -11,7 +11,7 @@ var MAP_SIZE = {
 
 var SETUP_TIME = 15+1;
 var SIM_TIME = 40+1;
-var INTERATION_TIME = 200;
+var ITERATION_TIME = 50;
 var SHORT_TIME = 5+1;
 //per round
 var REQUEST_LIMIT = 100;
@@ -131,7 +131,11 @@ var ColorfulConway = function() {
     self.connectSockets = function() {
         self.io.on('connection', function(socket) {
             //send message with data of current cells right away
-            socket.emit('currentCells', self.game.getCurrentCells());
+            socket.emit('init', {
+                map: MAP_SIZE,
+                cells: self.game.getCurrentCells(),
+                running: !!self.gameIntervalID ? ITERATION_TIME : null
+            });
 
             socket.on('requestCell', function(cellData) {
 
@@ -219,8 +223,6 @@ var ColorfulConway = function() {
         if(self.countdown.time > SHORT_TIME+2) {
             setTimeout(check, 0);
         }
-
-        self.io.emit('iterate', changedCells);
     }
 
     self.countdown = function(startTime) {
@@ -254,7 +256,6 @@ var ColorfulConway = function() {
 
         self.clearRequests();
         self.game.clear();
-        self.io.emit('clear');
 
         self.setupTimeout = setTimeout(self.enterSimulation, SETUP_TIME*1000);
         self.countdown(SETUP_TIME);
@@ -268,10 +269,10 @@ var ColorfulConway = function() {
         }
 
         self.clearRequests();
-        self.gameIntervalID = setInterval(self.iterateGame, INTERATION_TIME);
+        self.gameIntervalID = setInterval(self.iterateGame, ITERATION_TIME);
         self.simTimeout = setTimeout(self.enterSetup, SIM_TIME*1000);
         self.countdown(SIM_TIME);
-        self.io.emit('simulate')
+        self.io.emit('simulate', ITERATION_TIME)
     }
 
 

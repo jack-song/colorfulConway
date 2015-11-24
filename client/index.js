@@ -7,6 +7,8 @@ $(document).ready(function(){
   var TEST_DEAD_COLOR = 'rgb(238, 238, 238)';
   var USER_COLOR = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
 
+  window.songjack = window.songjack || {};
+
   var isMousedown = false;   // Tracks status of mouse button
   $(document).mousedown(function() {
     isMousedown = true;      // When mouse goes down, set isDown to true
@@ -45,25 +47,51 @@ $(document).ready(function(){
     }
   });
 
+  socket.on('init', function(bundle) {
+    window.songjack.game = new window.songjack.GameOfLife(bundle.map.cols, bundle.map.rows);
+
+    bundle.cells.forEach(function (cell) {
+      window.songjack.game.addCell(cell);
+      colorCell(cell);
+    });
+
+    if(bundle.running) {
+      window.songjack.gameIntervalID = setInterval(iterateGame, bundle.running);
+    }
+  });
+
   //set up socket listeners
   socket.on('newCell', function(cellData){
+    window.songjack.game.addCell(cellData);
     colorCell(cellData);
   });
 
-  socket.on('currentCells', function(cells){
-    cells.forEach(colorCell);
-  });
+  socket.on('setup', function(){
 
-  socket.on('iterate', function(cells){
-    cells.forEach(colorCell);
-  });
+    // clear the current game running id
+    if(window.songjack.gameIntervalID) {
+        clearInterval(window.songjack.gameIntervalID);
+        window.songjack.gameIntervalID = null;
+    }
 
-  socket.on('clear', function(){
+    window.songjack.game.clear();
     $('td').css('background-color', DEAD_COLOR);
   });
 
+  socket.on('simulate', function(iterationInterval){
+    window.songjack.gameIntervalID = setInterval(iterateGame, iterationInterval);
+  });
+
   socket.on('countdown', function(data){
-    var message = data.running ? 'Interact! Next round in: ' : 'Place your cells! Round starts in: ';
+    var message = data.running ? 'Simulating! Next round in: ' : 'Place your cells! Round starts in: ';
     $('#alert').text(message + data.time);
   });
+
+  var iterateGame = function() {
+    var changedCells = window.songjack.game.iterate();
+
+    changedCells.forEach(function(cell) {
+      colorCell(cell);
+    })
+  }
 });

@@ -204,11 +204,12 @@ var ColorfulConway = function() {
             if(changedCells.length !== self.lastChanges.length) {
                 match = false;
             } else {
-                changedCells.forEach(function (cell, index) {
-                    if(cell.x !== self.lastChanges[index].x || cell.y !== self.lastChanges[index].y) {
+                for(var i = 0; i < changedCells.length; i++){
+                    if(changedCells[i].x !== self.lastChanges[i].x || changedCells[i].y !== self.lastChanges[i].y) {
                         match = false;
+                        break;
                     }
-                });
+                }
             }
                 
             if(match) {

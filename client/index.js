@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  var socket = io();
+  var socket = io('http://colorfulconway-songjack.rhcloud.com:8000');
   var attachFastClick = Origami.fastclick;
   attachFastClick(document.body);
 

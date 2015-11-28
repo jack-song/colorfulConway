@@ -11,7 +11,7 @@ var MAP_SIZE = {
 
 var SETUP_TIME = 15+1;
 var SIM_TIME = 40+1;
-var ITERATION_TIME = 50;
+var ITERATION_TIME = 150;
 var SHORT_TIME = 5+1;
 //per round
 var REQUEST_LIMIT = 100;

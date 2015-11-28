@@ -17,18 +17,20 @@ $(document).ready(function(){
     isMousedown = false;    // When mouse goes up, set isDown to false
   });
 
+  //vanilla JS for speed
   var colorCell = function(cellData) {
-    var jcell = $('#' + cellData.x + '-' + cellData.y);
+    var cell = document.getElementById(cellData.x + '-' + cellData.y);
 
-    jcell.css('background-color', cellData.alive ? cellData.css : DEAD_COLOR);
+    cell.style.backgroundColor = cellData.alive ? cellData.css : DEAD_COLOR;
   }
 
   //assumes 'this' is the DOM element
+  //vanilla JS for speeeed
   var requestCell = function() {
     //only proceed if cell is dead
     //jquery only returns a stupid rgb string
-    if($(this).css("background-color") == TEST_DEAD_COLOR) {
-      var coords = $(this).attr('id').split('-');
+    if(!this.style.backgroundColor || this.style.backgroundColor == TEST_DEAD_COLOR) {
+      var coords = this.id.split('-');
 
       socket.emit('requestCell', {
           x: coords[0],

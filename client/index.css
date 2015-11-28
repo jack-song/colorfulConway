@@ -1,8 +1,6 @@
 table {
   margin-left:auto; 
   margin-right:auto;
-
-  cursor: cell;
 }
 
 td {
@@ -17,8 +15,6 @@ td {
   border-radius: .2rem;
 
   background-color: #eeeeee;
-
-  cursor: cell;
 }
 
 #alert {

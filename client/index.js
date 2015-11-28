@@ -40,6 +40,10 @@ $(document).ready(function(){
     }
   }
 
+  var setCursor = function (allowed) {
+    document.getElementsByTagName('table')[0].style.cursor = allowed ? 'cell' : 'not-allowed';
+  }
+
   //set up DOM listeners
   $('td').click(requestCell).mousedown(requestCell).mouseover(function () {
     if(isMousedown) {
@@ -58,6 +62,8 @@ $(document).ready(function(){
     if(bundle.running) {
       window.songjack.gameIntervalID = setInterval(iterateGame, bundle.running);
     }
+
+    setCursor(!bundle.running);
   });
 
   //set up socket listeners
@@ -76,10 +82,12 @@ $(document).ready(function(){
 
     window.songjack.game.clear();
     $('td').css('background-color', DEAD_COLOR);
+    setCursor(true);
   });
 
   socket.on('simulate', function(iterationInterval){
     window.songjack.gameIntervalID = setInterval(iterateGame, iterationInterval);
+    setCursor(false);
   });
 
   socket.on('countdown', function(data){

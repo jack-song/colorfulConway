@@ -269,10 +269,10 @@ var ColorfulConway = function() {
         }
 
         self.clearRequests();
+        self.io.emit('simulate', {interval: ITERATION_TIME, cells: self.game.getCurrentCells()});
         self.gameIntervalID = setInterval(self.iterateGame, ITERATION_TIME);
         self.simTimeout = setTimeout(self.enterSetup, SIM_TIME*1000);
         self.countdown(SIM_TIME);
-        self.io.emit('simulate', ITERATION_TIME)
     }
 
 

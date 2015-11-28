@@ -40,6 +40,13 @@ $(document).ready(function(){
     }
   }
 
+  var setCells = function (cells) {
+    cells.forEach(function (cell) {
+      window.songjack.game.addCell(cell);
+      colorCell(cell);
+    });
+  }
+
   var setCursor = function (allowed) {
     document.getElementsByTagName('table')[0].style.cursor = allowed ? 'cell' : 'not-allowed';
   }
@@ -54,10 +61,7 @@ $(document).ready(function(){
   socket.on('init', function(bundle) {
     window.songjack.game = new window.songjack.GameOfLife(bundle.map.cols, bundle.map.rows);
 
-    bundle.cells.forEach(function (cell) {
-      window.songjack.game.addCell(cell);
-      colorCell(cell);
-    });
+    setCells(bundle.cells);
 
     if(bundle.running) {
       window.songjack.gameIntervalID = setInterval(iterateGame, bundle.running);
@@ -85,8 +89,10 @@ $(document).ready(function(){
     setCursor(true);
   });
 
-  socket.on('simulate', function(iterationInterval){
-    window.songjack.gameIntervalID = setInterval(iterateGame, iterationInterval);
+  socket.on('simulate', function(bundle){
+    window.songjack.game.clear();
+    setCells(bundle.cells);
+    window.songjack.gameIntervalID = setInterval(iterateGame, bundle.interval);
     setCursor(false);
   });
 

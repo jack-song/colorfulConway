@@ -99,7 +99,7 @@ $(document).ready(function(){
   });
 
   socket.on('countdown', function(data){
-    var message = data.running ? 'Simulating! Next round in: ' : 'Place your cells! Round starts in: ';
+    var message = data.running ? 'Simulating! Next round in: ' : 'Click & drag or tap to place cells, refresh for more when you run out! Round starts in: ';
     $('#alert').text(message + data.time);
   });
 
